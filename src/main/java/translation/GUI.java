@@ -22,23 +22,17 @@ public class GUI {
             countryPanel.add(countryComboBox);
 
             JPanel languagePanel = new JPanel();
-            languagePanel.add(new JLabel("Language:"));
+            languagePanel.setLayout(new BoxLayout(languagePanel, BoxLayout.Y_AXIS));
+            JLabel langLabel = new JLabel("Language:");
+            langLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            languagePanel.add(langLabel);
 
-            JComboBox<String> languageComboBox = getLanguages(translator);
-            languagePanel.add(languageComboBox);
-
-            // add listener for when an item is selected.
-            languageComboBox.addItemListener(new ItemListener() {
-
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        String country = languageComboBox.getSelectedItem().toString();
-//                        JOptionPane.showMessageDialog(null, "user selected " + country + "!");
-                    }
-                }
-            });
+            JList<String> languageList = getLanguages(translator);
+            JScrollPane languageScrollPane = new JScrollPane(languageList);
+            languageScrollPane.setPreferredSize(new java.awt.Dimension(400, 150));
+            languageScrollPane.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 150));
+            languageScrollPane.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            languagePanel.add(languageScrollPane);
 
             JPanel buttonPanel = new JPanel();
             JPanel resultPanel = new JPanel();
@@ -50,7 +44,7 @@ public class GUI {
 // add action listener
             submit.addActionListener(e -> {
                 String countryName = (String) countryComboBox.getSelectedItem();
-                String languageName = (String) languageComboBox.getSelectedItem();
+                String languageName = languageList.getSelectedValue();
 
                 CountryCodeConverter countryConverter = new CountryCodeConverter();
                 LanguageCodeConverter languageConverter = new LanguageCodeConverter();
@@ -85,14 +79,18 @@ public class GUI {
         });
     }
 
-    private static JComboBox<String> getLanguages(Translator translator) {
+    private static JList<String> getLanguages(Translator translator) {
         LanguageCodeConverter converter = new LanguageCodeConverter();
-        // create combo box, add country codes into it, and add it to our panel
-        JComboBox<String> languageComboBox = new JComboBox<>();
-        for(String countryCode : translator.getLanguageCodes()) {
-            languageComboBox.addItem(converter.fromLanguageCode(countryCode));
+        String[] languages = new String[translator.getLanguageCodes().size()];
+
+        int i = 0;
+        for (String code : translator.getLanguageCodes()) {
+            languages[i++] = converter.fromLanguageCode(code);
         }
-        return languageComboBox;
+
+        JList<String> languageList = new JList<>(languages);
+        languageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        return languageList;
     }
 
     private static String[] getCountries(Translator translator) {
