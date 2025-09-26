@@ -29,6 +29,7 @@ public class GUI {
 
             JList<String> languageList = getLanguages(translator);
             JScrollPane languageScrollPane = new JScrollPane(languageList);
+            // jst some sizing and display stuff
             languageScrollPane.setPreferredSize(new java.awt.Dimension(400, 150));
             languageScrollPane.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 150));
             languageScrollPane.setAlignmentX(JComponent.CENTER_ALIGNMENT);
